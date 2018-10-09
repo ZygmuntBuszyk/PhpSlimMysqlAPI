@@ -3,6 +3,28 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 $app = new \Slim\App;
+
+//ENABLE CORES ON A SERVER
+// ENABLE CROSS PLATFORM API FETCHING
+$app->options('/{routes:.+}', function ($request, $response, $args) {
+  return $response;
+});
+$app->add(function ($req, $res, $next) {
+  $response = $next($req, $res);
+  return $response
+          ->withHeader('Access-Control-Allow-Origin', '*') // zezwala WSZYSTKIM("*", można podać specyficzną domenę) domeną na dostęp do API. Pozwala na requesty. 
+          ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+          ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Definiuje na jakie metody pozwalam innym przegladarką
+});
+
+
+
+
+
+
+
+
+
 ini_set('display_errors', 1);
 // Get all members from database
 $app -> get('/api/members', function(Request $request, Response $response){
@@ -40,7 +62,7 @@ $app -> get('/api/member/{id}', function(Request $request, Response $response){
 
 
     $stmt = $db->query($sql);
-    $member = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $member = $stmt->fetch(PDO::FETCH_OBJ);
     $db = null; // zeruje wartość $db 
     echo json_encode($member);
   }
